@@ -59,7 +59,7 @@ class NotesPage extends StatelessWidget {
           }
           if (noteList.isEmpty) {
             return const Center(
-              child: Text("No chat"),
+              child: Text("No Notes"),
             );
           }
           return Obx(

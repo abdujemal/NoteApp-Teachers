@@ -55,7 +55,9 @@ class ChatPage extends StatelessWidget {
                   ? Center(
                       child: CircularProgressIndicator(color: mainColor),
                     )
-                  : ListView.builder(
+                  : inboxList.isEmpty ?
+                  const Center(child: Text("No Chats")):
+                   ListView.builder(
                       itemCount: inboxList.length,
                       itemBuilder: (context, index) => ListTile(
                         title: Text(inboxList[index].studentName),

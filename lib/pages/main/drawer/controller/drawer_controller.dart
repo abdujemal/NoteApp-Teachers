@@ -4,7 +4,9 @@ import 'package:note_app_teachers/model/myinfo.dart';
 class DController extends GetxController {
   var isLoading = false.obs;
   var isEditable = false.obs;
-  Rx<MyInfo> myInfo = MyInfo("", "", "", "").obs;
+  var profileImage = "".obs;
+
+  Rx<MyInfo> myInfo = MyInfo("", "", "", "", "").obs;
 
   void setIsEditable(bool val) {
     isEditable.value = val;
@@ -16,5 +18,9 @@ class DController extends GetxController {
 
   void setIsLoading(bool val) {
     isLoading.value = val;
+  }
+
+  void setProfileImage(String img) {
+    profileImage.value = img;
   }
 }

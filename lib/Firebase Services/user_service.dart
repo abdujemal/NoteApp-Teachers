@@ -12,6 +12,7 @@ import 'package:note_app_teachers/model/note.dart';
 import 'package:note_app_teachers/pages/RegisterationPage/comp/more_info_sheet.dart';
 import 'package:note_app_teachers/pages/RegisterationPage/controller/signuplogin_controller.dart';
 import 'package:note_app_teachers/pages/RegisterationPage/registration_page.dart';
+import 'package:note_app_teachers/pages/main/controller/tabs_controller.dart';
 import 'package:note_app_teachers/pages/main/drawer/controller/drawer_controller.dart';
 import 'package:note_app_teachers/pages/main/main_page.dart';
 import 'package:note_app_teachers/pages/note_viewer/controller/pdf_viewer_controller.dart';
@@ -68,8 +69,8 @@ class UserService extends GetxService {
     try {
       await noteRef.update(data);
 
-      SendNotification sendNotification =
-          SendNotification(title: subject, body: "${title} is uploaded.", topic: "11S");
+      SendNotification sendNotification = SendNotification(
+          title: subject, body: "${title} is uploaded.", topic: "11S");
       sendNotification.send();
 
       uploadNotePDF(filePath, noteRef.key!, context);
@@ -96,8 +97,6 @@ class UserService extends GetxService {
           msg: "You have successfully uploaded.",
           color: Colors.green);
       successMsg.show();
-
-     
     } catch (e) {
       slcontroller.setIsLoading(false);
 
@@ -129,12 +128,19 @@ class UserService extends GetxService {
     }
   }
 
-  saveUserInfo(
-      String name, String subject, String classes, BuildContext context) async {
-    MyInfo myInfo = MyInfo(auth.currentUser!.uid, name, subject, classes);
-    Map<String, Object?> mydata = myInfo.toFirebaseMap(myInfo);
+  saveUserInfo(String name, String subject, String classes,
+      BuildContext context, File file) async {
     try {
       slcontroller.setIsLoading(true);
+
+      TaskSnapshot taskSnapshot =
+          await storage.ref("Teachers/${auth.currentUser!.uid}").putFile(file);
+
+      String img_url = await taskSnapshot.ref.getDownloadURL();
+
+      MyInfo myInfo =
+          MyInfo(auth.currentUser!.uid, name, subject, classes, img_url);
+      Map<String, Object?> mydata = myInfo.toFirebaseMap(myInfo);
 
       await datebase
           .ref()
@@ -158,12 +164,68 @@ class UserService extends GetxService {
     }
   }
 
-  saveUserInfoFromDrawer(
-      String name, String subject, String classes, BuildContext context) async {
-    MyInfo myInfo = MyInfo(auth.currentUser!.uid, name, subject, classes);
-    Map<String, Object?> mydata = myInfo.toFirebaseMap(myInfo);
+  startLive(String title) async {
+    try {
+      TabsController tabsController = Get.put(TabsController());
+
+      tabsController.setIsLoading(true);
+
+      await datebase.ref().child("LiveStream").child(dController.myInfo.value.uid).update({
+        "title": title,
+        "numOfUser": "0",
+        "lid": dController.myInfo.value.uid,
+        "tid": auth.currentUser!.uid,
+        "t_name": dController.myInfo.value.name,
+        "t_img": dController.myInfo.value.img_url
+      });
+
+      
+
+      tabsController.setIsLoading(false);
+    } catch (e) {
+      MSGSnack errMSG =
+          MSGSnack(title: "Error!", msg: e.toString(), color: Colors.red);
+
+      errMSG.show();
+    }
+  }
+
+  stopLive(String channelName) async {
+    try {
+      await datebase.ref().child("LiveStream").child(channelName).remove();
+      await datebase.ref().child("LiveStreamChat").child(channelName).remove();
+    } catch (e) {
+      MSGSnack errMSG =
+          MSGSnack(title: "Error!", msg: e.toString(), color: Colors.red);
+
+      errMSG.show();
+    }
+  }
+
+  
+
+  saveUserInfoFromDrawer(String name, String subject, String classes,
+      BuildContext context, File? file) async {
     try {
       dController.setIsLoading(true);
+
+      Map<String, Object?> mydata;
+
+      if (file == null) {
+        MyInfo myInfo = MyInfo(auth.currentUser!.uid, name, subject, classes,
+            dController.myInfo.value.img_url);
+        mydata = myInfo.toFirebaseMap(myInfo);
+      } else {
+        TaskSnapshot taskSnapshot = await storage
+            .ref("Teachers/${auth.currentUser!.uid}")
+            .putFile(file);
+
+        String img_url = await taskSnapshot.ref.getDownloadURL();
+
+        MyInfo myInfo =
+            MyInfo(auth.currentUser!.uid, name, subject, classes, img_url);
+        mydata = myInfo.toFirebaseMap(myInfo);
+      }
 
       await datebase
           .ref()
