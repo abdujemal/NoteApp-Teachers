@@ -47,7 +47,7 @@ class NotesPage extends StatelessWidget {
               final note =
                   Map<dynamic, dynamic>.from(value as Map<dynamic, dynamic>);
               final noteModel = Note.fromFirebaseMap(note);
-              if (note["subject"] == dController.myInfo.value.subject) {
+              if (note["subject"] == dController.myInfo.value.subject.toLowerCase()) {
                 if (note["grade"].toString().toLowerCase() ==
                     grade.toLowerCase()) {
                   noteList.add(noteModel);

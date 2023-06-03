@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:agora_rtc_engine/rtc_local_view.dart' as RtcLocalView;
 import 'package:agora_rtc_engine/rtc_remote_view.dart' as RtcRemoteView;
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -71,9 +70,9 @@ class _CallPageState extends State<CallPage> {
         .child("numOfUser");
 
     ref.onValue.listen((event) {
-      setState(() {
-        currentNum = event.snapshot.value.toString();
-      });
+      
+        callController.currentNum.value = event.snapshot.value.toString();
+     
     });
   }
 
@@ -232,9 +231,10 @@ class _CallPageState extends State<CallPage> {
                 const SizedBox(
                   width: 5,
                 ),
-                Text(
-                  currentNum,
-                  style: const TextStyle(color: Colors.white),
+                Obx(()=> Text(
+                    callController.currentNum.value,
+                    style: const TextStyle(color: Colors.white),
+                  ),
                 )
               ],
             ),

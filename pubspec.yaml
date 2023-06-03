@@ -37,8 +37,10 @@ dependencies:
   firebase_storage: ^10.2.7
   flutter:
     sdk: flutter
+  flutter_tts: ^3.4.0
   font_awesome_flutter: ^10.1.0
   get: ^4.6.1
+  google_cloud_translation: ^0.0.3
   google_sign_in: ^5.2.3
   http: ^0.13.4
   image_picker: ^0.8.5+3
@@ -46,7 +48,6 @@ dependencies:
   path_provider: ^2.0.9
   pdfx: any
   permission_handler: ^9.2.0
-  flutter_tts: ^3.4.0
 
 dev_dependencies:
   flutter_lints: ^1.0.0
